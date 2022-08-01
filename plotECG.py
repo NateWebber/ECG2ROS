@@ -1,4 +1,3 @@
-import sys
 from threading import Thread
 import time
 import BLE_GATT
@@ -15,6 +14,14 @@ stream_receive_uuid = 'FB005C82-02E7-F387-1CAD-8ACD2D8DF0C8'
 
 received_file = None
 
+RECORD_TIME = 15 #time to record data, in seconds
+
+"""
+This additional script records data to an external file for a user-determined time period (default 15 seconds)
+It then uses matplotlib to make a simple graph of the data
+Most of the code here is identical to that in ECG2ROS.py
+"""
+
 def connect_to_stream():
     polar = BLE_GATT.Central(polar_mac_address)
     polar.connect()
@@ -27,21 +34,16 @@ def connect_to_stream():
     polar.wait_for_notifications()
 
 def stream_notify(value):
-    #print(f"received: {value}")
     data_conv(value)
 
 def data_conv(data: bytearray):
-    #global OUTLET
     if data[0] == 0x00:
-        #print(".", end = '', flush=True)
         step = 3
         samples = data[10:]
         offset = 0
         while offset < len(samples):
             ecg = convert_array_to_signed_int(samples, offset, step)
-            #print(f"data_conv ecg: {ecg}")
             offset += step
-            #print('writin\'')
             received_file.write(f"{str(ecg)}\n")
             
 def convert_array_to_signed_int(data, offset, length):
@@ -51,32 +53,39 @@ def convert_array_to_signed_int(data, offset, length):
 
 if __name__ == "__main__":
 
-    open('received.txt', 'w').close()
+    open('received.txt', 'w').close() #wipe existing received.txt
 
     received_file = open('received.txt', 'w')
     
+    #setup and run thread for collecting data from stream
     stream_thread = Thread(target=connect_to_stream)
     stream_thread.start()
 
-    for i in range(15):
+    #wait until chosen time has elapsed
+    for i in range(RECORD_TIME):
         print(i + 1)
         time.sleep(1)
 
+    #close the output file
     received_file.close()   
 
+    #reopen output file for reading
     data_file = open('received.txt', 'r')
-    y_axis = data_file.read()
-    y_axis = y_axis.split('\n')
+
+    y_axis = data_file.read() #get all data
+    y_axis = y_axis.split('\n') #convert to list
+
+    #remove any empty data points (there's usually just one at the end)
     for x in y_axis:
         if x == '':
             y_axis.remove(x)
+    
+    #convert all data points into ints (they are strings before this step)
     y_axis = [int(x) for x in y_axis]
 
     data_file.close()
 
+    #plot the ECG data
     plt.plot(y_axis, color='red')
     plt.ylim([-1000, 1000])
     plt.show()
-
-    #print(y_axis)
-    #sys.exit(0)
