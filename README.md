@@ -15,3 +15,5 @@ This script could also be used to get other sorts of data from the Polar H10. To
 [ROS 2 Foxy](https://docs.ros.org/en/foxy/Installation.html)
 
 [BLE_GATT](https://github.com/ukBaz/BLE_GATT)
+
+[matplotlib (for data plotting script)](https://matplotlib.org/)
