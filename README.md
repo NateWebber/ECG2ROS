@@ -2,9 +2,9 @@
 
 ## About
 
-This is a small script that I wrote for collecting ECG data from a Polar H10 biosensor, and transferring it to a ROS Foxy node to be published. I wrote this as part of my Summer 2022 DAAD internship at Universität zu Lübeck in Lübeck, Germany.
+This is a compilation of some of the scripts and tools I wrote for receiving biometric data and publishing it for use in a ROS network. The primary product is ECG2ROS.py, a small script that I wrote for collecting ECG data from a Polar H10 biosensor, and transferring it to a ROS Foxy node to be published. I wrote this as part of my Summer 2022 DAAD internship at Universität zu Lübeck in Lübeck, Germany.
 
-This script is a little bit hacky due to some dubious multithreading use (a concept whose best practices are still very new to me), but it works. 
+The ECG2ROS script (as well as some of the others) is a little bit hacky due to some dubious multithreading use (a concept whose best practices are still very new to me), but it works. 
 
 This script could also be used to get other sorts of data from the Polar H10. To do this the byterarray **POLAR_STREAM_CONFIG** would need to be modified per the [official specification](https://github.com/polarofficial/polar-ble-sdk/blob/master/technical_documentation/Polar_Measurement_Data_Specification.pdf). There would also have to be work done on appropriately converting the received hex data into meaningful values. That process for ECG data is borrowed (stolen) from [here](https://github.com/markspan/PolarBand2lsl/blob/main/Polar2LSL.py).
 
